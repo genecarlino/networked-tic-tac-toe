@@ -3,14 +3,15 @@
 }
 {\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
 {\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
-{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid1\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid1}}
-{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}}
-\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid1\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}}{\leveltext\leveltemplateid101\'01\'00;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid2}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}}
+\margl1440\margr1440\vieww13900\viewh16780\viewkind0
 \deftab720
 \pard\pardeftab720\sa321\partightenfactor0
 
 \f0\b\fs48 \cf0 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 Design Choices for Network Tic Tac Toe\
+Design Choices for Network Tic Tac Toe\
 \pard\pardeftab720\sa240\partightenfactor0
 
 \f1\b0\fs24 \cf0 This paper aims to discuss the design choices made for the network Tic Tac Toe game. We will explore the decisions made regarding the program structure, network communication, and user experience. The game is designed to be simple, efficient, and easy to understand, while ensuring a smooth and enjoyable experience for players.\
@@ -28,28 +29,28 @@
 \f1\b0\fs24 \cf0 The program is divided into several functions to ensure modularity and maintainability:\
 \pard\tx220\tx720\pardeftab720\li720\fi-720\partightenfactor0
 \ls1\ilvl0
-\f2\fs26 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	1	}\expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 print_board
+\f2\fs26 \cf0 \kerning1\expnd0\expndtw0 {\listtext	1	}\expnd0\expndtw0\kerning0
+print_board
 \f1\fs24 : Displays the Tic Tac Toe board in a user-friendly format.\
 \ls1\ilvl0
-\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	2	}\expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 check_winner
+\f2\fs26 \kerning1\expnd0\expndtw0 {\listtext	2	}\expnd0\expndtw0\kerning0
+check_winner
 \f1\fs24 : Determines if there is a winner based on the current board state.\
 \ls1\ilvl0
-\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	3	}\expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 handle_move
+\f2\fs26 \kerning1\expnd0\expndtw0 {\listtext	3	}\expnd0\expndtw0\kerning0
+handle_move
 \f1\fs24 : Processes a player's move and updates the board.\
 \ls1\ilvl0
-\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	4	}\expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 server
+\f2\fs26 \kerning1\expnd0\expndtw0 {\listtext	4	}\expnd0\expndtw0\kerning0
+server
 \f1\fs24 : Implements the server-side logic.\
 \ls1\ilvl0
-\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	5	}\expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 client
+\f2\fs26 \kerning1\expnd0\expndtw0 {\listtext	5	}\expnd0\expndtw0\kerning0
+client
 \f1\fs24 : Implements the client-side logic.\
 \ls1\ilvl0
-\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	6	}\expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 main
+\f2\fs26 \kerning1\expnd0\expndtw0 {\listtext	6	}\expnd0\expndtw0\kerning0
+main
 \f1\fs24 : Parses command-line arguments and initiates the appropriate game mode.\
 \pard\pardeftab720\sa240\partightenfactor0
 \cf0 This modular approach allows for easy understanding of the code, simplifies maintenance, and enables future expansion if necessary.\
@@ -73,4 +74,62 @@ The game's user interface displays the Tic Tac Toe board as a 3x3 grid with numb
 \pard\pardeftab720\sa240\partightenfactor0
 
 \f1\b0\fs24 \cf0 In designing the network Tic Tac Toe game, we focused on creating a simple, efficient, and enjoyable experience for players. By using a modular program structure, implementing reliable network communication, and providing an intuitive user interface, we believe the game achieves these goals. The choices made in this implementation lay a solid foundation for further improvements and potential expansions, such as adding support for multiple concurrent games or incorporating a graphical user interface.\
+\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sa240\partightenfactor0
+\ls2\ilvl0
+\f2\fs26 \cf0 \kerning1\expnd0\expndtw0 {\listtext	1	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 print_board(board: str) -> None
+\f1\fs24 : This function is responsible for displaying the current state of the Tic Tac Toe board in the command line interface. It takes the current board state as a string input, with each character representing a cell in the board. The function iterates through the board string, printing three characters at a time (corresponding to a row in the Tic Tac Toe grid), and adds horizontal dividers between rows. When designing this function, the goal was to create a simple, clear representation of the board that makes it easy for users to visualize the game state and plan their next moves.\
+\ls2\ilvl0
+\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	2	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 check_winner(board: str) -> str
+\f1\fs24 : The 
+\f2\fs26 check_winner
+\f1\fs24  function checks if there is a winner in the current game state. It takes the board state as a string input and iterates through a list of winning patterns (row, column, and diagonal combinations) to check if any player has achieved a winning combination. If a winning combination is found, the function returns the character representing the winning player (either "X" or "O"). If no winner is found, the function returns an empty string. This function was designed to efficiently evaluate the board state to determine if the game has ended in a win for one of the players.\
+\ls2\ilvl0
+\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	3	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 handle_move(board: str, player: str, move: int) -> Tuple[str, bool]
+\f1\fs24 : The 
+\f2\fs26 handle_move
+\f1\fs24  function processes a player's move, updating the board state and checking for a winner. It takes the current board state as a string input, the player's character ("X" or "O"), and the move as an integer representing the cell index (0-8). The function first checks if the move is valid (i.e., within the valid range and pointing to an empty cell). If the move is valid, it updates the board state with the player's character at the chosen position and checks for a winner. If a winner is found, the function prints the updated board and a winning message, then returns the updated board and a boolean indicating that the game is over. If the move is invalid, the function prints an error message and returns the unchanged board and a boolean indicating that the game is not over. This function was designed to handle user input and manage game state updates while providing feedback to the user.\
+\ls2\ilvl0
+\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	4	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 server(port: int) -> None
+\f1\fs24  and 
+\f2\fs26 client(host: str, port: int) -> None
+\f1\fs24 : The 
+\f2\fs26 server
+\f1\fs24  and 
+\f2\fs26 client
+\f1\fs24  functions are the core components of the networked Tic Tac Toe game. They are responsible for setting up the server and client instances, managing network connections, and facilitating communication between the two players. The 
+\f2\fs26 server
+\f1\fs24  function listens for incoming connections on the specified port and, once a connection is established, enters a loop to handle the server player's moves and communicate with the client. The 
+\f2\fs26 client
+\f1\fs24  function connects to the specified host and port and enters a similar loop to handle the client player's moves and communicate with the server. Both functions utilize the 
+\f2\fs26 handle_move
+\f1\fs24  function to process player moves and update the game state. These functions were designed to provide a smooth networked gaming experience for users, handling the underlying complexities of network communication.\
+\ls2\ilvl0
+\f2\fs26 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 {\listtext	5	}\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 main() -> None
+\f1\fs24 : The 
+\f2\fs26 main
+\f1\fs24  function serves as the entry point for the Tic Tac Toe program. It uses the 
+\f2\fs26 argparse
+\f1\fs24  library to parse command-line arguments, allowing users to specify whether to run the program in server or client mode and provide the necessary information like hostname and port. After parsing the arguments, the 
+\f2\fs26 main
+\f1\fs24  function calls the corresponding 
+\f2\fs26 server
+\f1\fs24  or 
+\f2\fs26 client
+\f1\fs24  function with the appropriate parameters. This function was designed to provide a flexible and user-friendly way to configure and launch the Tic Tac Toe game.\
+\pard\tx720\pardeftab720\sa240\partightenfactor0
+\cf0 \
+\
+\
+\pard\pardeftab720\partightenfactor0
+\cf0 \strokec2 The board is initialized in the server function because it represents the state of the tic-tac-toe game that both the server and the client players interact with. The server initializes the board as an empty board with 9 spaces and then updates the board after each move made by the server and the client. By initializing and maintaining the board within the server function, the server can control the game state, update it as needed, and send the updated board to the client to keep both players informed about the current state of the game.\
+\
+\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 \outl0\strokewidth0 \
 }

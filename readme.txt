@@ -21,17 +21,20 @@ Replace [port] with the port number on which you want the server to listen. If t
 
 Example:
 
-yaml
 
 python ttt.py -s 5131
 
 Client Mode
+
 
 To start the client, run:
 
 css
 
 python ttt.py -c [hostname] [port]
+
+ex. python3 ttt.py -c localhost 5131
+
 
 Replace [hostname] with the hostname or IP address of the device where the server is running. Replace [port] with the port number on which the server is listening. If the hostname or port is omitted, they default to the hostname of the device on which the client application is running and port 5131, respectively.
 
