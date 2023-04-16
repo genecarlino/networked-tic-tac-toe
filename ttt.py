@@ -86,6 +86,10 @@ def client(address: str, port: int) -> None:
             game_over = False
             while not game_over:
                 board = sock.recv(BUFFER_SIZE).decode()
+
+                if board == "yes":
+                    continue
+
                 print_board(board)
                 game_over = check_winner(board) != ""
 
@@ -103,14 +107,18 @@ def client(address: str, port: int) -> None:
 
             replay = input("Do you want to play again? (yes/no): ").lower()
             sock.sendall(replay.encode())
-            
+
             if replay == "yes":
                 server_replay_decision = sock.recv(BUFFER_SIZE).decode()
                 if server_replay_decision.lower() == "yes":
                     board = " " * 9
                     sock.sendall(board.encode())  # Send the reset board to the server
+                else:
+                    print("Server decided not to play again.")
+                    break
             else:
                 break
+
 
 
 
