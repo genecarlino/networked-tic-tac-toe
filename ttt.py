@@ -2,6 +2,7 @@ import sys
 import socket
 import argparse
 from typing import Tuple
+import os
 
 # Constants
 DEFAULT_PORT = 5131
@@ -18,17 +19,13 @@ def print_board(board: str) -> None:
 
 # Function to check if there is a winner in the current board state
 def check_winner(board: str) -> str:
-    # List of possible winning patterns
-    winning_patterns = [
-        (0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6),
-        (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6)
-    ]
-    for a, b, c in winning_patterns:
-        # Check if any of the winning patterns match
+    win_positions = [(0, 1, 2), (3, 4, 5), (6, 7, 8),
+                     (0, 3, 6), (1, 4, 7), (2, 5, 8),
+                     (0, 4, 8), (2, 4, 6)]
+    for a, b, c in win_positions:
         if board[a] == board[b] == board[c] and board[a] != " ":
-            return board[a]  # Return the winning player's character
-    return ""  # Return an empty string if there is no winner
-
+            return board[a]
+    return ""
 
 # Function to handle a player's move, update the board, and check for a winner
 def handle_move(board: str, player: str, move: int) -> Tuple[str, bool]:
@@ -49,9 +46,6 @@ def handle_move(board: str, player: str, move: int) -> Tuple[str, bool]:
         print("Invalid move. Try again.")
         return board, False  # Return the unchanged board and a flag indicating the game is not over
 
-# Function to run the server instance of the networked Tic Tac Toe game
-# Checks if the server or clients move is a winner
-
 def server(port: int) -> None:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(("", port))
@@ -60,10 +54,10 @@ def server(port: int) -> None:
         conn, addr = s.accept()
         with conn:
             print(f"Connected by {addr}")
-            game_over = False
             replay = "yes"
             while replay.lower() == "yes":
                 board = " " * 9  # Reset the board at the beginning of each game
+                game_over = False
                 while not game_over:
                     print_board(board)
                     print("Your move (0-8):")
@@ -75,48 +69,62 @@ def server(port: int) -> None:
                         game_over = check_winner(board) != ""
                 replay = input("Do you want to play again? (yes/no): ")
                 conn.sendall(replay.encode())  # Send the replay decision to the client
+                if replay.lower() == "yes":
+                    board = conn.recv(BUFFER_SIZE).decode()  # Wait for the client's reset board
 
 
-# Function to run the client instance of the networked Tic Tac Toe game
-def client(host: str, port: int) -> None:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((host, port))
-        print(f"Connected to server at {host}:{port}")
-        play_again = True
-        while play_again:
-            board = " " * 9
+def client(address: str, port: int) -> None:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.connect((address, port))
+        print("Connected to the server.")
+
+        while True:
             game_over = False
             while not game_over:
-                board = s.recv(BUFFER_SIZE).decode()
+                board = sock.recv(BUFFER_SIZE).decode()
+                print_board(board)
                 game_over = check_winner(board) != ""
-                if not game_over:
-                    print_board(board)
-                    print("Your move (0-8):")
-                    move = int(input())
-                    board, game_over = handle_move(board, "O", move)
-                    if not game_over:
-                        s.sendall(board.encode())
-            play_again_response = s.recv(BUFFER_SIZE).decode()
-            play_again = play_again_response.lower() == "yes"
 
-# Main function to parse command-line arguments and launch the server or client instance
+                if not game_over:
+                    print("Your turn")
+                    move = input("Your move (0-8): ")
+                    board, game_over = handle_move(board, "O", int(move))
+                    if not game_over:
+                        sock.sendall(board.encode())
+                    else:
+                        print("Game over")
+                else:
+                    print("Waiting for opponent's move...")
+
+            replay = input("Do you want to play again? (yes/no): ").lower()
+            sock.sendall(replay.encode())
+            
+            if replay == "yes":
+                server_replay_decision = sock.recv(BUFFER_SIZE).decode()
+                if server_replay_decision.lower() == "yes":
+                    board = " " * 9
+                    sock.sendall(board.encode())  # Send the reset board to the server
+            else:
+                break
+
+
+
+
 def main():
-    # Set up argument parser
-    parser = argparse.ArgumentParser(description="Tic Tac Toe Game")
+    parser = argparse.ArgumentParser(description="Networked Tic Tac Toe")
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("-s", "--server", action="store_true", help="Run in server mode")
-    group.add_argument("-c", "--client", type=str, help="Run in client mode and connect to the specified host")
-    parser.add_argument("port", nargs="?", default=DEFAULT_PORT, type=int, help="Port to listen on (server) or connect to (client), defaults to 5131")
-    # Parse command-line arguments
+    group.add_argument("-s", "--server", nargs='?', const=DEFAULT_PORT, metavar="PORT", type=int, help="Run as server, listening on PORT (defaults to 5131)")
+    group.add_argument("-c", "--client", action="store_true", help="Run as client, connecting to server")
+    parser.add_argument("--host", default="localhost", metavar="HOST", help="Specify the host to connect as a client (defaults to localhost)")
+    parser.add_argument("-p", "--port", default=DEFAULT_PORT, metavar="PORT", type=int, help="Specify the port to connect or listen (defaults to 5131)")
+
     args = parser.parse_args()
 
-    # Launch the server or client instance based on the parsed arguments
     if args.server:
         server(args.port)
     else:
-        hostname = args.client
-        client(hostname, args.port)
+        client(args.host, args.port)
 
-# Entry point for the script
 if __name__ == "__main__":
     main()
+
