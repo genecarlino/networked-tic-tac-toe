@@ -54,59 +54,50 @@ def handle_move(board: str, player: str, move: int) -> Tuple[str, bool]:
 
 def server(port: int) -> None:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        # Bind the server to the specified port
         s.bind(("", port))
-        # Listen for incoming connections
         s.listen(1)
         print(f"Server ready. Listening on port {port}.")
-        # Accept a connection
         conn, addr = s.accept()
-        with conn: #ensure connection with be closed
+        with conn:
             print(f"Connected by {addr}")
-            # Initialize the board state
-            board = " " * 9
             game_over = False
-            while not game_over:
-                # Print the current board state
-                print_board(board)
-                print("Your move enter an INT (0-8):")
-                # Get the server player's move
-                move = int(input())
-                # Update the board and check for a winner
-                board, game_over = handle_move(board, "X", move)
-                if not game_over:
-                    # Send the updated board state to the client
-                    conn.sendall(board.encode())
-                    # Receive the updated board state from the client
-                    board = conn.recv(BUFFER_SIZE).decode()
-                    # Check if the client's move resulted in a win
-                    game_over = check_winner(board) != ""
+            replay = "yes"
+            while replay.lower() == "yes":
+                board = " " * 9  # Reset the board at the beginning of each game
+                while not game_over:
+                    print_board(board)
+                    print("Your move (0-8):")
+                    move = int(input())
+                    board, game_over = handle_move(board, "X", move)
+                    if not game_over:
+                        conn.sendall(board.encode())
+                        board = conn.recv(BUFFER_SIZE).decode()
+                        game_over = check_winner(board) != ""
+                replay = input("Do you want to play again? (yes/no): ")
+                conn.sendall(replay.encode())  # Send the replay decision to the client
+
 
 # Function to run the client instance of the networked Tic Tac Toe game
 def client(host: str, port: int) -> None:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as c:
-        # Connect to the server at the specified host and port
-        c.connect((host, port))
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((host, port))
         print(f"Connected to server at {host}:{port}")
-        # Initialize the board state
-        board = " " * 9
-        game_over = False
-        while not game_over:
-            # Receive the updated board state from the server
-            board = c.recv(BUFFER_SIZE).decode()
-            # Check if the server's move resulted in a win
-            game_over = check_winner(board) != ""
-            if not game_over:
-                # Print the current board state
-                print_board(board)
-                print("Your move, enter an INT (0-8):")
-                # Get the client player's move
-                move = int(input())
-                # Update the board and check for a winner
-                board, game_over = handle_move(board, "O", move)
+        play_again = True
+        while play_again:
+            board = " " * 9
+            game_over = False
+            while not game_over:
+                board = s.recv(BUFFER_SIZE).decode()
+                game_over = check_winner(board) != ""
                 if not game_over:
-                    # Send the updated board state to the server
-                    c.sendall(board.encode())
+                    print_board(board)
+                    print("Your move (0-8):")
+                    move = int(input())
+                    board, game_over = handle_move(board, "O", move)
+                    if not game_over:
+                        s.sendall(board.encode())
+            play_again_response = s.recv(BUFFER_SIZE).decode()
+            play_again = play_again_response.lower() == "yes"
 
 # Main function to parse command-line arguments and launch the server or client instance
 def main():
