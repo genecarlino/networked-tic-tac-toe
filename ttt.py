@@ -2,7 +2,7 @@ import sys
 import socket
 import argparse
 from enum import Enum
-#from typing import Tuple
+
 
 #Default Port to be used if no port is specified
 DEFAULT_PORT = 5131
@@ -171,3 +171,6 @@ if __name__ == "__main__":
         print("Invalid arguments. Please use -s or -c to specify server or client mode.")
     
 
+#Sample Server Start : python3 ttt4.py -s\
+
+#Sample Client Start : python3 ttt4.py -c localhost 5131
