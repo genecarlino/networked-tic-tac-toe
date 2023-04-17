@@ -122,17 +122,30 @@ def play_game(sock: socket.socket, is_server: bool):
         print("Game over.")
 
         # Replay feature
-        #ask the user if they want to play again, and send their response to the client
         if is_server:
-            play_again = input("Do you want to play again? (y/n): ")
-            sock.sendall(play_again.encode())
-        else:
-            #if instance is client, wait for the server's response and recive that response
-            play_again = sock.recv(1024).decode()
+            # If the instance is the server, ask the player if they want to play again
+            play_again_server = input("Do you want to play again? (y/n): ")
 
-        if play_again.lower() != 'y':
-            print("Closing connection.")
+            # Send the server's decision to the client
+            sock.sendall(play_again_server.encode())
+
+            # Receive the client's decision about playing again
+            play_again_client = sock.recv(1024).decode()
+        else:
+            # If the instance is the client, receive the server's decision about playing again
+            play_again_server = sock.recv(1024).decode()
+
+            # Ask the client player if they want to play again
+            play_again_client = input("Do you want to play again? (y/n): ")
+
+            # Send the client's decision to the server
+            sock.sendall(play_again_client.encode())
+
+        # If both players do not want to play again, close the connection and exit the loop
+        if play_again_server.lower() != 'y' or play_again_client.lower() != 'y':
+            print("Closing connection. Client and/or Server did not want to play again. Goodbye!")
             break
+
 
 
 
