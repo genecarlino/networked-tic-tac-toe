@@ -2,7 +2,7 @@ import sys
 import socket
 import argparse
 from enum import Enum
-from typing import Tuple
+#from typing import Tuple
 
 #Default Port to be used if no port is specified
 DEFAULT_PORT = 5131
@@ -152,18 +152,27 @@ def play_game(sock: socket.socket, is_server: bool):
 
 
 if __name__ == "__main__":
+    #create argument parser
     parser = argparse.ArgumentParser(description="Tic-Tac-Toe Client/Server")
+    #add mutually exclusive group for server and client
     group = parser.add_mutually_exclusive_group(required=True)
+    #add the server to the group
     group.add_argument("-s", "--server", action="store_true", help="Run as server")
+    #add the client to the group, expect a host as an additional argument
     group.add_argument("-c", "--client", metavar="HOST", help="Run as client and connect to server with the given host")
+    #add the default argument to the parser with a default port of 5131
     parser.add_argument("port", nargs="?", type=int, default=DEFAULT_PORT, help="Port to use (default: 5131)")
 
     args = parser.parse_args()
 
+    #if server arg provided, run server function
     if args.server:
         server(args.port)
+    #if client arg provided, run client function
     elif args.client:
         client(args.client, args.port)
+    #if neither arg provided, print error message
     else:
         print("Invalid arguments. Please use -s or -c to specify server or client mode.")
+    
 
