@@ -53,40 +53,53 @@ def client(host: str, port: int):
         play_game(s, False)
 
 def play_game(sock: socket.socket, is_server: bool):
-    board = Board()
-    my_turn = is_server
-    my_player = Player.X if is_server else Player.O
-    opponent_player = Player.O if is_server else Player.X
-
     while True:
-        if my_turn:
-            print("Your turn:")
-            move = input("Enter your move (row col): ")
-            row, col = map(int, move.split())
-            if board.make_move(row, col, my_player):
-                sock.sendall(move.encode())
+        board = Board()
+        my_turn = is_server
+        my_player = Player.X if is_server else Player.O
+        opponent_player = Player.O if is_server else Player.X
+
+        while True:
+            if my_turn:
+                print("Your turn:")
+                move = input("Enter your move (row col): ")
+                row, col = map(int, move.split())
+                if board.make_move(row, col, my_player):
+                    sock.sendall(move.encode())
+                    print(board)
+                    if board.is_winner(my_player):
+                        print("You win!")
+                        break
+                    elif board.is_full():
+                        print("It's a draw!")
+                        break
+                    my_turn = not my_turn
+                else:
+                    print("Invalid move. Try again.")
+            else:
+                print("Waiting for the opponent's move...")
+                move = sock.recv(1024).decode()
+                row, col = map(int, move.split())
+                board.make_move(row, col, opponent_player)
                 print(board)
-                if board.is_winner(my_player):
-                    print("You win!")
-                    break
-                elif board.is_full():
-                    print("It's a draw!")
+                if board.is_winner(opponent_player):
+                    print("You lose!")
                     break
                 my_turn = not my_turn
-            else:
-                print("Invalid move. Try again.")
-        else:
-            print("Waiting for the opponent's move...")
-            move = sock.recv(1024).decode()
-            row, col = map(int, move.split())
-            board.make_move(row, col, opponent_player)
-            print(board)
-            if board.is_winner(opponent_player):
-                print("You lose!")
-                break
-            my_turn = not my_turn
 
-    print("Game over. Closing connection.")
+        print("Game over.")
+
+        # Replay feature
+        if is_server:
+            play_again = input("Do you want to play again? (y/n): ")
+            sock.sendall(play_again.encode())
+        else:
+            play_again = sock.recv(1024).decode()
+
+        if play_again.lower() != 'y':
+            print("Closing connection.")
+            break
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Tic-Tac-Toe Client/Server")
