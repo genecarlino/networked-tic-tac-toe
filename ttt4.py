@@ -55,9 +55,21 @@ def client(host: str, port: int):
 def play_game(sock: socket.socket, is_server: bool):
     while True:
         board = Board()
+
+        if is_server:
+            opponent_choice = sock.recv(1024).decode()
+            opponent_player = Player[opponent_choice]
+            my_player = Player.O if opponent_player == Player.X else Player.X
+        else:
+            choice = input("Choose your player (X/O): ").upper()
+            while choice not in ["X", "O"]:
+                choice = input("Invalid choice. Choose your player (X/O): ").upper()
+
+            my_player = Player[choice]
+            opponent_player = Player.O if my_player == Player.X else Player.X
+            sock.sendall(choice.encode())
+
         my_turn = is_server
-        my_player = Player.X if is_server else Player.O
-        opponent_player = Player.O if is_server else Player.X
 
         while True:
             if my_turn:
@@ -99,6 +111,9 @@ def play_game(sock: socket.socket, is_server: bool):
         if play_again.lower() != 'y':
             print("Closing connection.")
             break
+
+
+
 
 
 if __name__ == "__main__":
