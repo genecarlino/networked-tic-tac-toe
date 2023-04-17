@@ -146,11 +146,6 @@ def play_game(sock: socket.socket, is_server: bool):
             print("Closing connection. Client and/or Server did not want to play again. Goodbye!")
             break
 
-
-
-
-
-
 if __name__ == "__main__":
     #create argument parser
     parser = argparse.ArgumentParser(description="Tic-Tac-Toe Client/Server")
