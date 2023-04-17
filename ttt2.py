@@ -1,9 +1,11 @@
+#most working code, saved for reference
+
+
 import sys
 import socket
 import argparse
 from typing import Tuple
 import os
-import random
 
 # Constants
 DEFAULT_PORT = 5131
@@ -20,8 +22,6 @@ def print_board(board: str) -> None:
 
 # Function to check if there is a winner in the current board state
 def check_winner(board: str) -> str:
-    if not board:  # line to check if the board is empty
-        return ""
     win_positions = [(0, 1, 2), (3, 4, 5), (6, 7, 8),
                      (0, 3, 6), (1, 4, 7), (2, 5, 8),
                      (0, 4, 8), (2, 4, 6)]
@@ -29,7 +29,6 @@ def check_winner(board: str) -> str:
         if board[a] == board[b] == board[c] and board[a] != " ":
             return board[a]
     return ""
-
 
 # Function to handle a player's move, update the board, and check for a winner
 def handle_move(board: str, player: str, move: int) -> Tuple[str, bool]:
@@ -50,7 +49,6 @@ def handle_move(board: str, player: str, move: int) -> Tuple[str, bool]:
         print("Invalid move. Try again.")
         return board, False  # Return the unchanged board and a flag indicating the game is not over
 
-
 def server(port: int) -> None:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(("", port))
@@ -59,38 +57,26 @@ def server(port: int) -> None:
         conn, addr = s.accept()
         with conn:
             print(f"Connected by {addr}")
-
-            # Choose a symbol for the server and send the correct symbol to the client
-            server_symbol = random.choice(["X", "O"])
-            client_symbol = "O" if server_symbol == "X" else "X"
-            conn.sendall(client_symbol.encode())  # Send the client symbol to the client
-
             replay = "yes"
             while replay.lower() == "yes":
                 board = " " * 9  # Reset the board at the beginning of each game
                 game_over = False
-                current_player = server_symbol
-
                 while not game_over:
-                    if current_player == server_symbol:
-                        print_board(board)
-                        print("Your move (0-8):")
-                        move = int(input())
-                        board, game_over = handle_move(board, server_symbol, move)
+                    print_board(board)
+                    print("Your move (0-8):")
+                    move = int(input())
+                    board, game_over = handle_move(board, "X", move)
+                    if not game_over:
                         conn.sendall(board.encode())
-                    else:
                         board = conn.recv(BUFFER_SIZE).decode()
                         game_over = check_winner(board) != ""
-
-                    current_player = client_symbol if current_player == server_symbol else server_symbol
-
+                print("Game over")
                 replay = input("Do you want to play again? (yes/no): ")
                 conn.sendall(replay.encode())  # Send the replay decision to the client
                 if replay.lower() == "yes":
                     board = " " * 9
                     conn.sendall(board.encode())  # Send the reset board to the client
-                else:
-                    break
+
 
 
 def client(address: str, port: int) -> None:
@@ -98,47 +84,43 @@ def client(address: str, port: int) -> None:
         sock.connect((address, port))
         print("Connected to the server.")
 
-        # Receive the symbol from the server
-        player = sock.recv(BUFFER_SIZE).decode()
-        opponent = "O" if player == "X" else "X"
-        print(f"Your symbol is {player}")
-
         replay = "yes"
         while replay.lower() == "yes":
             game_over = False
-            current_player = opponent
-
             while not game_over:
                 board = sock.recv(BUFFER_SIZE).decode()
 
-                if board == "end":
-                    break
+                if board == "yes":
+                    continue
 
                 print_board(board)
                 game_over = check_winner(board) != ""
 
                 if not game_over:
-                    if current_player == player:
-                        print("Your turn")
-                        move = input("Your move (0-8): ")
-                        board, game_over = handle_move(board, player, int(move))
+                    print("Your turn")
+                    move = input("Your move (0-8): ")
+                    board, game_over = handle_move(board, "O", int(move))
+                    if not game_over:
                         sock.sendall(board.encode())
                     else:
-                        print("Waiting for opponent's move...")
+                        print("Game over")
                 else:
+                    print("Waiting for opponent's move...")
                     print("Game over")
-
-                current_player = opponent if current_player == player else player
 
             replay = input("Do you want to play again? (yes/no): ").lower()
             sock.sendall(replay.encode())
 
             if replay == "yes":
-                board = sock.recv(BUFFER_SIZE).decode()  # Receive the reset board from the server
+                server_replay_decision = sock.recv(BUFFER_SIZE).decode()
+                if server_replay_decision.lower() == "yes":
+                    board = " " * 9
+                    sock.sendall(board.encode())  # Send the reset board to the server
+                else:
+                    print("Server decided not to play again.")
+                    break
             else:
                 break
-
-
 
 
 
@@ -162,4 +144,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
