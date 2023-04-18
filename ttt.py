@@ -4,15 +4,15 @@ import argparse
 from enum import Enum
 
 
-#Default Port to be used if no port is specified
+# Default Port to be used if no port is specified
 DEFAULT_PORT = 5131
 
-#Enumeration for the two players
+# Enumeration for the two players
 class Player(Enum):
     X = 'X'
     O = 'O'
 
-#Class to represent the board
+# Class to represent the board
 class Board:
     def __init__(self):
         #Initialize the board to be empty, 3x3
@@ -40,7 +40,7 @@ class Board:
     def __str__(self) -> str:
         return '\n'.join([' '.join(self.board[i]) for i in range(3)])
 
-#Server function - sets up server, listens for client conn 
+# Server function - sets up server, listens for client conn 
 def server(port: int):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(('', port))
@@ -51,14 +51,14 @@ def server(port: int):
             print(f"Client connected from {addr}")
             play_game(conn, True)
 
-#client function that connects to a server
+# Client function that connects to a server
 def client(host: str, port: int):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((host, port))
         print(f"Connected to server {host} on port {port}")
         play_game(s, False)
 
-#main function for playing the game
+# Main function for playing the game
 def play_game(sock: socket.socket, is_server: bool):
     while True:
         #innit new game board
@@ -79,10 +79,10 @@ def play_game(sock: socket.socket, is_server: bool):
             opponent_player = Player.O if my_player == Player.X else Player.X
             sock.sendall(choice.encode())
 
-        #setting the initial turn, server always goes first because client chose their player first
+        # Setting the initial turn, server always goes first because client chose their player first
         my_turn = is_server
 
-        #Game loop - continues until a player wins or the board is full (draw)
+        # Game loop - continues until a player wins or the board is full (draw)
         while True:
             if my_turn:
                 #if it is the player's turn, ask for their move, and send it to the server
@@ -105,18 +105,18 @@ def play_game(sock: socket.socket, is_server: bool):
                 else:
                     print("Invalid move. Try again.")
             else:
-                #if it is the opponent's turn, wait for their move
+                # If it is the opponent's turn, wait for their move
                 print("Waiting for the opponent's move...")
                 move = sock.recv(1024).decode()
                 row, col = map(int, move.split())
                 board.make_move(row, col, opponent_player)
-                #display the updated board
+                # Display the updated board
                 print(board)
-                #check if opponent has won
+                # Check if opponent has won
                 if board.is_winner(opponent_player):
                     print("You lose!")
                     break
-                #switch turns
+                # Switch turns
                 my_turn = not my_turn
 
         print("Game over.")
@@ -147,26 +147,26 @@ def play_game(sock: socket.socket, is_server: bool):
             break
 
 if __name__ == "__main__":
-    #create argument parser
+    # Create argument parser
     parser = argparse.ArgumentParser(description="Tic-Tac-Toe Client/Server")
-    #add mutually exclusive group for server and client
+    # Add mutually exclusive group for server and client
     group = parser.add_mutually_exclusive_group(required=True)
-    #add the server to the group
+    # Add the server to the group
     group.add_argument("-s", "--server", action="store_true", help="Run as server")
-    #add the client to the group, expect a host as an additional argument
+    # Add the client to the group, expect a host as an additional argument
     group.add_argument("-c", "--client", metavar="HOST", help="Run as client and connect to server with the given host")
-    #add the default argument to the parser with a default port of 5131
+    # Add the default argument to the parser with a default port of 5131
     parser.add_argument("port", nargs="?", type=int, default=DEFAULT_PORT, help="Port to use (default: 5131)")
 
     args = parser.parse_args()
 
-    #if server arg provided, run server function
+    # If server arg provided, run server function
     if args.server:
         server(args.port)
-    #if client arg provided, run client function
+    # If client arg provided, run client function
     elif args.client:
         client(args.client, args.port)
-    #if neither arg provided, print error message
+    # If neither arg provided, print error message
     else:
         print("Invalid arguments. Please use -s or -c to specify server or client mode.")
     
