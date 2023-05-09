@@ -171,6 +171,11 @@ if __name__ == "__main__":
         print("Invalid arguments. Please use -s or -c to specify server or client mode.")
     
 
-#Sample Server Start : python3 ttt4.py -s\
+#Sample Server Start : python3 ttt.py -s\
+                    #python3 ttt.py -s 8080\
+                    #python3 ttt4.py -c <remote_server_ip_or_domain> 8080
+                    
 
-#Sample Client Start : python3 ttt4.py -c localhost 5131
+
+
+#Sample Client Start : python3 ttt.py -c localhost 5131
